@@ -61,6 +61,15 @@ function Header({ onMenu }: { onMenu: () => void }) {
 function Body({ children }: { children: ReactNode }) {
   const { chain, loading } = useChain();
   const companyId = useStore((s) => s.companyId);
+  const mine = useStore((s) => s.myCompanies);
+  const addMyCompany = useStore((s) => s.addMyCompany);
+
+  // A company opened by ID joins "Your companies" once the contract confirms it exists.
+  useEffect(() => {
+    const c = chain?.company;
+    if (c && chain?.companyId === companyId && !mine.some((m) => m.id === companyId)) addMyCompany({ id: companyId!, name: c.name });
+  }, [chain, companyId, mine, addMyCompany]);
+
   if (!companyId) return <CompanyGate />;
   if (loading && !chain) return <ShellSkeleton />;
   if (chain && !chain.configured) return <CompanyGate reason="The treasury contract is not configured. Run scripts/setup-testnet.sh (see SETUP.md)." />;

@@ -69,9 +69,9 @@ export const useStore = create<State>()(
     }),
     {
       name: "agent-zero",
-      version: 4,
-      // Older versions held sample data; start clean.
-      migrate: (s) => ({ myCompanies: [], ...(s as object) }) as unknown as State,
+      version: 5,
+      // v4 and earlier could hold an auto-selected company; never restore one the user did not create or open.
+      migrate: (s) => ({ myCompanies: [], ...(s as object), companyId: null }) as unknown as State,
       partialize: (s) => ({ companyId: s.companyId, tasks: s.tasks, products: s.products, activity: s.activity, myCompanies: s.myCompanies }) as unknown as State,
     },
   ),

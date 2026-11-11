@@ -29,6 +29,7 @@ Contract `zero.agentzero-hq-87730.testnet`:
 - Paid 0.5 NEAR for an approved task: `7H1zXZXDGTapxArT5jXsQb1kSKPW4bMM5twtkNNTrVKq`
 - Paid 2.5 NEAR to the Research agent for AI-produced work: `7S9SLmg9kon72zeBSzoBDGcknVbcmgZSKkCC6a9DKoS1`
 - Rejected a 2.5 NEAR payout because the treasury was too low (visible in `get_ledger`)
+- Sold the market report for 7 NEAR: 5.6 NEAR retained, 0.28 NEAR paid to each of five agents: `1VeXAJLfCZW6hK5sBmJWM3nGoBGGRmEFdTYFTtFPzME`
 
 View any of them at `https://testnet.nearblocks.io/txns/<hash>`.
 

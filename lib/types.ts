@@ -1,76 +1,30 @@
-export type CompanyStatus = "active" | "paused";
-
-export interface Policy {
-  maxPayment: number; // NEAR, per payment
-  spendingCap: number; // NEAR, total agent spend
-  minimumPrice: number; // NEAR, minimum product price
-  retainedPct: number; // % of revenue kept in treasury
-  workerPct: number; // % of revenue allocated to workers
-}
-
-export interface Company {
-  id: string;
-  name: string;
-  description: string;
-  mission: string;
-  owner: string;
-  contractId: string | null;
-  status: CompanyStatus;
-  createdAt: number;
-  policy: Policy;
-}
-
 export type AgentRole = "ceo" | "research" | "product" | "sales" | "finance";
 
-export interface Agent {
-  id: string;
-  role: AgentRole;
-  name: string;
-  title: string;
-  description: string;
-  permissions: string[];
-  status: "idle" | "working" | "reviewing" | "blocked";
-  currentTask: string | null;
-  account: string;
-}
-
-export type TaskStatus =
-  | "pending"
-  | "assigned"
-  | "in_progress"
-  | "submitted"
-  | "under_review"
-  | "approved"
-  | "completed"
-  | "rejected";
-
-export interface Bid {
-  id: string;
-  agentId: string;
-  price: number;
-  note: string;
-  status: "open" | "accepted" | "declined";
-}
-
-export interface Task {
-  id: string;
-  title: string;
-  description: string;
-  agentId: string | null;
-  budget: number;
-  status: TaskStatus;
-  dependsOn: string[];
-  bids: Bid[];
-  deliverable?: string;
-  createdAt: number;
-}
-
 /**
- * Provenance of a ledger entry. The UI must never present a record as
- * on-chain unless it carries a verified transaction hash.
+ * A unit of work. Identity, assignee, budget and payment status live on-chain
+ * (create_task / approve_task / pay_agent). The plan text and the deliverable
+ * the agent produced live off-chain, here.
  */
-export type Provenance = "onchain" | "precheck" | "simulated";
+export interface WorkTask {
+  companyId: string;
+  id: string;
+  title: string;
+  description: string;
+  role: AgentRole;
+  agent: string; // on-chain account that will be paid
+  budget: number; // NEAR
+  dependsOn: string[];
+  content?: string; // deliverable (Markdown)
+  summary?: string;
+  model?: string;
+  createdAt: number;
+  createTx?: string;
+}
 
+/** Chain task status, or "missing" while the create tx is not yet visible. */
+export type ChainTaskStatus = "Open" | "Approved" | "Paid" | "Cancelled" | "missing";
+
+export type Provenance = "onchain";
 export type TxType = "deposit" | "payment" | "revenue" | "distribution" | "rejected";
 
 export interface LedgerEntry {
@@ -88,18 +42,21 @@ export interface LedgerEntry {
 
 export interface ActivityEvent {
   id: string;
-  agentId: string;
+  companyId: string;
+  role: AgentRole | "owner" | "system";
   text: string;
   at: number;
+  txUrl?: string;
 }
 
 export interface Product {
   id: string;
+  companyId: string;
   title: string;
   description: string;
   price: number;
-  status: "draft" | "listed" | "sold";
-  pages: number;
   sections: string[];
-  sales: number;
+  content: string;
+  words: number;
+  createdAt: number;
 }
